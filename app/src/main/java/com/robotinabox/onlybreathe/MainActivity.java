@@ -1,4 +1,4 @@
-package com.robotinabox.breathe.onlybreathe;
+package com.robotinabox.onlybreathe;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;

@@ -1,4 +1,4 @@
-package com.robotinabox.breathe.onlybreathe;
+package com.robotinabox.onlybreathe;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
