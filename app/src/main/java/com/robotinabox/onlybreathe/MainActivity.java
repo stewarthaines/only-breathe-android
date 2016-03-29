@@ -1,15 +1,35 @@
 package com.robotinabox.onlybreathe;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Button mSelectVideoBtn;
+    private static final int REQUEST_CODE = 1;
+    private TextView mDurationDimension;
+    private TextView mFilenameDate;
+    private ImageView mVideoThumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +46,86 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        mSelectVideoBtn = (Button) findViewById(R.id.select_video_btn);
+        mSelectVideoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectVideoWithIntent();
+            }
+        });
+
+        mDurationDimension = (TextView) findViewById(R.id.duration_dimension);
+
+        mFilenameDate = (TextView) findViewById(R.id.filename_date);
+
+        mVideoThumbnail = (ImageView) findViewById(R.id.video_thumbnail);
+    }
+
+    private void selectVideoWithIntent() {
+
+        Intent mediaChooser = new Intent(Intent.ACTION_GET_CONTENT);
+        //comma-separated MIME types
+        mediaChooser.setType("video/*");
+        startActivityForResult(mediaChooser, REQUEST_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        // Check which request we're responding to
+        if (requestCode == REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+
+                // Do something with the contact here (bigger example below)
+                Uri contentUri = data.getData();
+
+                Log.d("contentUri", contentUri.toString());
+
+                getContentInfo(contentUri);
+            }
+        }
+    }
+
+    private void getContentInfo(Uri uri) {
+        // uri.getPath(); just open the file???
+        String mimeType = getContentResolver().getType(uri);
+
+        Cursor returnCursor =
+                getContentResolver().query(uri, null, null, null, null);
+    /*
+     * Get the column indexes of the data in the Cursor,
+     * move to the first row in the Cursor, get the data,
+     * and display it.
+     */
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+
+        returnCursor.moveToFirst();
+
+        mFilenameDate.setText(returnCursor.getString(nameIndex));
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+        retriever.setDataSource(this, uri);
+        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        long timeInMillisec = Long.parseLong(time);
+
+        Bitmap bmp = null;
+
+        bmp = retriever.getFrameAtTime();
+        int videoHeight = bmp.getHeight();
+        int videoWidth = bmp.getWidth();
+
+        mVideoThumbnail.setImageBitmap(bmp);
+
+        DateFormat df = new SimpleDateFormat("mm:ss");
+        String formatted = df.format(new Date(timeInMillisec));
+
+        mDurationDimension.setText("" + videoWidth + "x" + videoHeight + " " + formatted);
     }
 
     @Override
