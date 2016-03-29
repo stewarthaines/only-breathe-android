@@ -2,6 +2,8 @@ package com.robotinabox.onlybreathe;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -15,6 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,12 +99,27 @@ public class MainActivity extends AppCompatActivity {
      * and display it.
      */
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+
         returnCursor.moveToFirst();
 
         mFilenameDate.setText(returnCursor.getString(nameIndex));
 
-        mDurationDimension.setText(Long.toString(returnCursor.getLong(sizeIndex)));
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+        retriever.setDataSource(this, uri);
+        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        long timeInMillisec = Long.parseLong(time);
+
+        Bitmap bmp = null;
+
+        bmp = retriever.getFrameAtTime();
+        int videoHeight = bmp.getHeight();
+        int videoWidth = bmp.getWidth();
+
+        DateFormat df = new SimpleDateFormat("mm:ss");
+        String formatted = df.format(new Date(timeInMillisec));
+
+        mDurationDimension.setText("" + videoWidth + "x" + videoHeight + " " + formatted);
     }
 
     @Override
