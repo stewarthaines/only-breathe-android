@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1;
     private TextView mDurationDimension;
     private TextView mFilenameDate;
+    private ImageView mVideoThumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         mDurationDimension = (TextView) findViewById(R.id.duration_dimension);
 
         mFilenameDate = (TextView) findViewById(R.id.filename_date);
+
+        mVideoThumbnail = (ImageView) findViewById(R.id.video_thumbnail);
     }
 
     private void selectVideoWithIntent() {
@@ -115,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         bmp = retriever.getFrameAtTime();
         int videoHeight = bmp.getHeight();
         int videoWidth = bmp.getWidth();
+
+        mVideoThumbnail.setImageBitmap(bmp);
 
         DateFormat df = new SimpleDateFormat("mm:ss");
         String formatted = df.format(new Date(timeInMillisec));
