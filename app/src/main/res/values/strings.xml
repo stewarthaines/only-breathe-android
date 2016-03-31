@@ -2,4 +2,9 @@
     <string name="app_name">OnlyBreathe</string>
     <string name="action_settings">Settings</string>
     <string name="select_video_btn_label">Select Video</string>
+    <string name="error_drm_not_supported">drm not supported</string>
+    <string name="error_querying_decoders">error querying decoders</string>
+    <string name="error_no_secure_decoder">error no secure decoder</string>
+    <string name="error_no_decoder">error no decorder</string>
+    <string name="error_instantiating_decoder">error instantiating decoder</string>
 </resources>
